@@ -91,3 +91,27 @@ themeSelect.addEventListener("change", function () {
   document.body.className = this.value;
   localStorage.setItem("theme", this.value);
 });
+
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
+
+document.getElementById('signupBtn').onclick = async () => {
+  const { user, error } = await supabase.auth.signUp({
+    email: emailInput.value,
+    password: passwordInput.value
+  });
+  if (error) alert(error.message);
+};
+
+document.getElementById('loginBtn').onclick = async () => {
+  const { user, error } = await supabase.auth.signInWithPassword({
+    email: emailInput.value,
+    password: passwordInput.value
+  });
+  if (error) alert(error.message);
+};
+
+document.getElementById('logoutBtn').onclick = async () => {
+  await supabase.auth.signOut();
+  location.reload();
+};
