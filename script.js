@@ -1,20 +1,10 @@
 const supabase = supabase.createClient(
-  'https://YOUR_PROJECT.supabase.co',
-  'YOUR_ANON_KEY'
+  'https://viybvomulregopxuuoak.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpeWJ2b211bHJlZ29weHV1b2FrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1MTYwNjIsImV4cCI6MjA2NjA5MjA2Mn0.QGb-_kmJcSV_-huSPod8OERvtFWSXkJprtxSnFNleMU'
 );
 
-const startBtn = document.getElementById("startBtn");
-const stopBtn = document.getElementById("stopBtn");
+// Theme change
 const themeSelect = document.getElementById("theme");
-const distanceSpan = document.getElementById("distance");
-const topSpeedSpan = document.getElementById("topSpeed");
-const avgSpeedSpan = document.getElementById("avgSpeed");
-
-let watchId;
-let coords = [];
-let startTime;
-
-// THEME
 const savedTheme = localStorage.getItem("theme");
 if (savedTheme) {
   document.body.className = savedTheme;
@@ -25,85 +15,99 @@ themeSelect.addEventListener("change", function () {
   localStorage.setItem("theme", this.value);
 });
 
-// GEO TRACKING
-function getDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // km
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat/2)**2 +
-            Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
-            Math.sin(dLon/2)**2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  return R * c;
-}
+// GPS tracking
+let watchId = null;
+let positions = [];
+let startTime = null;
+let maxSpeed = 0;
 
-startBtn.onclick = () => {
-  coords = [];
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
+const status = document.getElementById("status");
+const rideData = document.getElementById("rideData");
+
+startBtn.addEventListener("click", () => {
+  const name = document.getElementById("riderName").value.trim();
+  const bike = document.getElementById("bikeModel").value.trim();
+
+  if (!name || !bike) {
+    alert("Please enter your name and bike model.");
+    return;
+  }
+
   startTime = new Date();
-  watchId = navigator.geolocation.watchPosition(
-    pos => {
-      coords.push({ 
-        lat: pos.coords.latitude,
-        lon: pos.coords.longitude,
-        speed: pos.coords.speed || 0,
-        time: new Date()
-      });
+  positions = [];
+  maxSpeed = 0;
 
-      // Update display
-      const d = calculateStats().distance;
-      distanceSpan.textContent = d.toFixed(2);
+  watchId = navigator.geolocation.watchPosition(
+    (pos) => {
+      const { latitude, longitude, speed } = pos.coords;
+      if (speed && speed > maxSpeed) maxSpeed = speed;
+      positions.push({ lat: latitude, lon: longitude, time: pos.timestamp });
     },
-    err => alert("GPS error: " + err.message),
+    (err) => {
+      status.textContent = "GPS error: " + err.message;
+    },
     { enableHighAccuracy: true }
   );
 
+  status.textContent = "Tracking...";
   startBtn.disabled = true;
   stopBtn.disabled = false;
-};
+});
 
-stopBtn.onclick = async () => {
-  navigator.geolocation.clearWatch(watchId);
-  const stats = calculateStats();
-
-  const name = document.getElementById("name").value;
-  const bike = document.getElementById("bike").value;
-
-  const { error } = await supabase.from("rides").insert([
-    {
-      name,
-      bike,
-      distance: stats.distance,
-      avg_speed: stats.avgSpeed,
-      top_speed: stats.topSpeed,
-      date: new Date().toISOString()
-    }
-  ]);
-
-  if (error) alert("Upload failed: " + error.message);
-  else alert("Ride saved!");
-
-  // Reset
-  startBtn.disabled = false;
+stopBtn.addEventListener("click", async () => {
+  if (watchId) navigator.geolocation.clearWatch(watchId);
   stopBtn.disabled = true;
-  distanceSpan.textContent = avgSpeedSpan.textContent = topSpeedSpan.textContent = "0";
-};
+  startBtn.disabled = false;
 
-function calculateStats() {
-  if (coords.length < 2) return { distance: 0, avgSpeed: 0, topSpeed: 0 };
-  let dist = 0;
-  let top = 0;
-  for (let i = 1; i < coords.length; i++) {
-    const a = coords[i-1];
-    const b = coords[i];
-    dist += getDistance(a.lat, a.lon, b.lat, b.lon);
-    if (b.speed && b.speed > top) top = b.speed;
+  const endTime = new Date();
+  const duration = (endTime - startTime) / 1000; // seconds
+  const distance = calculateDistance(positions); // in km
+  const avgSpeed = distance / (duration / 3600); // km/h
+
+  const ride = {
+    name: document.getElementById("riderName").value,
+    bike: document.getElementById("bikeModel").value,
+    distance: distance.toFixed(2),
+    avg_speed: avgSpeed.toFixed(2),
+    top_speed: (maxSpeed * 3.6).toFixed(2), // m/s to km/h
+    timestamp: new Date().toISOString()
+  };
+
+  const { error } = await supabase.from("rides").insert([ride]);
+  if (error) {
+    status.textContent = "Upload error: " + error.message;
+  } else {
+    status.textContent = "Ride saved!";
   }
 
-  const duration = (coords.at(-1).time - coords[0].time) / 3600000; // hours
-  const avg = dist / duration || 0;
+  rideData.innerHTML = `
+    <li><strong>Name:</strong> ${ride.name}</li>
+    <li><strong>Bike:</strong> ${ride.bike}</li>
+    <li><strong>Distance:</strong> ${ride.distance} km</li>
+    <li><strong>Avg Speed:</strong> ${ride.avg_speed} km/h</li>
+    <li><strong>Top Speed:</strong> ${ride.top_speed} km/h</li>
+  `;
+});
 
-  avgSpeedSpan.textContent = avg.toFixed(1);
-  topSpeedSpan.textContent = (top * 3.6).toFixed(1); // m/s to km/h
+function calculateDistance(coords) {
+  const toRad = (value) => (value * Math.PI) / 180;
+  let dist = 0;
+  for (let i = 1; i < coords.length; i++) {
+    const a = coords[i - 1], b = coords[i];
+    const R = 6371; // km
+    const dLat = toRad(b.lat - a.lat);
+    const dLon = toRad(b.lon - a.lon);
+    const lat1 = toRad(a.lat);
+    const lat2 = toRad(b.lat);
 
-  return { distance: dist, avgSpeed: avg, topSpeed: top * 3.6 };
+    const x =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1) * Math.cos(lat2) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+    dist += R * c;
+  }
+  return dist;
 }
