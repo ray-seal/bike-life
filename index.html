@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bike Life GPS</title>
+  <title>Bike Life</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
   <header>
-    <h1>🏍️ Bike Life GPS Tracker</h1>
+    <h1>🏍️ Bike Life</h1>
   </header>
 
   <section>
@@ -25,12 +25,18 @@
   </section>
 
   <section>
-    <input type="text" id="riderName" placeholder="Your name" />
-    <input type="text" id="bikeModel" placeholder="Bike model" />
+    <h2>Start Your Ride</h2>
+    <input type="text" id="riderName" placeholder="Your Name" />
+    <input type="text" id="bikeModel" placeholder="Bike Model" />
     <button id="startBtn">Start Ride</button>
     <button id="stopBtn" disabled>Stop Ride</button>
-    <p id="status">Waiting to start...</p>
-    <ul id="rideData"></ul>
+  </section>
+
+  <section>
+    <h2>Stats</h2>
+    <p><strong>Distance:</strong> <span id="distance">0</span> km</p>
+    <p><strong>Avg Speed:</strong> <span id="avgSpeed">0</span> km/h</p>
+    <p><strong>Top Speed:</strong> <span id="topSpeed">0</span> km/h</p>
   </section>
 
   <script src="script.js"></script>
