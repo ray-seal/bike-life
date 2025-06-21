@@ -1,164 +1,109 @@
-// Supabase initialization (CDN version)
-const supabaseUrl = 'https://viybvomulregopxuuoak.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpeWJ2b211bHJlZ29weHV1b2FrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1MTYwNjIsImV4cCI6MjA2NjA5MjA2Mn0.QGb-_kmJcSV_-huSPod8OERvtFWSXkJprtxSnFNleMU.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpeWJ2b211bHJlZ29weHV1b2FrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1MTYwNjIsImV4cCI6MjA2NjA5MjA2Mn0.QGb-_kmJcSV_-huSPod8OERvtFWSXkJprtxSnFNleMU';
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+const supabase = supabase.createClient(
+  'https://YOUR_PROJECT.supabase.co',
+  'YOUR_ANON_KEY'
+);
 
-// DOM elements
-const rideForm = document.getElementById("rideForm");
-const rideList = document.getElementById("rideList");
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
 const themeSelect = document.getElementById("theme");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-const loginBtn = document.getElementById("loginBtn");
-const signupBtn = document.getElementById("signupBtn");
-const logoutBtn = document.getElementById("logoutBtn");
+const distanceSpan = document.getElementById("distance");
+const topSpeedSpan = document.getElementById("topSpeed");
+const avgSpeedSpan = document.getElementById("avgSpeed");
 
-let rides = [];
+let watchId;
+let coords = [];
+let startTime;
 
-// Load saved theme from localStorage and apply it
-const savedTheme = localStorage.getItem("theme") || "light";
-document.body.className = savedTheme;
-themeSelect.value = savedTheme;
-
-// Theme change handler
-themeSelect.addEventListener("change", () => {
-  const selectedTheme = themeSelect.value;
-  document.body.className = selectedTheme;
-  localStorage.setItem("theme", selectedTheme);
+// THEME
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme) {
+  document.body.className = savedTheme;
+  themeSelect.value = savedTheme;
+}
+themeSelect.addEventListener("change", function () {
+  document.body.className = this.value;
+  localStorage.setItem("theme", this.value);
 });
 
-// Display rides in the list
-function displayRides() {
-  rideList.innerHTML = "";
-  rides.forEach(ride => {
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <strong>${ride.date}</strong> - ${ride.destination} (${ride.distance} km)<br/>
-      ${ride.notes ? `<em>${ride.notes}</em><br/>` : ""}
-      <button class="deleteBtn" data-id="${ride.id}">Delete</button>
-    `;
-    rideList.appendChild(li);
-  });
-
-  // Attach delete handlers
-  document.querySelectorAll(".deleteBtn").forEach(btn => {
-    btn.addEventListener("click", async (e) => {
-      const rideId = e.target.dataset.id;
-      const { error } = await supabase
-        .from("rides")
-        .delete()
-        .eq("id", rideId);
-
-      if (error) {
-        alert("Error deleting ride: " + error.message);
-      } else {
-        loadRides();
-      }
-    });
-  });
+// GEO TRACKING
+function getDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 +
+            Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+            Math.sin(dLon/2)**2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
 }
 
-// Load rides for logged-in user
-async function loadRides() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    rides = [];
-    displayRides();
-    return;
+startBtn.onclick = () => {
+  coords = [];
+  startTime = new Date();
+  watchId = navigator.geolocation.watchPosition(
+    pos => {
+      coords.push({ 
+        lat: pos.coords.latitude,
+        lon: pos.coords.longitude,
+        speed: pos.coords.speed || 0,
+        time: new Date()
+      });
+
+      // Update display
+      const d = calculateStats().distance;
+      distanceSpan.textContent = d.toFixed(2);
+    },
+    err => alert("GPS error: " + err.message),
+    { enableHighAccuracy: true }
+  );
+
+  startBtn.disabled = true;
+  stopBtn.disabled = false;
+};
+
+stopBtn.onclick = async () => {
+  navigator.geolocation.clearWatch(watchId);
+  const stats = calculateStats();
+
+  const name = document.getElementById("name").value;
+  const bike = document.getElementById("bike").value;
+
+  const { error } = await supabase.from("rides").insert([
+    {
+      name,
+      bike,
+      distance: stats.distance,
+      avg_speed: stats.avgSpeed,
+      top_speed: stats.topSpeed,
+      date: new Date().toISOString()
+    }
+  ]);
+
+  if (error) alert("Upload failed: " + error.message);
+  else alert("Ride saved!");
+
+  // Reset
+  startBtn.disabled = false;
+  stopBtn.disabled = true;
+  distanceSpan.textContent = avgSpeedSpan.textContent = topSpeedSpan.textContent = "0";
+};
+
+function calculateStats() {
+  if (coords.length < 2) return { distance: 0, avgSpeed: 0, topSpeed: 0 };
+  let dist = 0;
+  let top = 0;
+  for (let i = 1; i < coords.length; i++) {
+    const a = coords[i-1];
+    const b = coords[i];
+    dist += getDistance(a.lat, a.lon, b.lat, b.lon);
+    if (b.speed && b.speed > top) top = b.speed;
   }
 
-  const { data, error } = await supabase
-    .from("rides")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("date", { ascending: false });
+  const duration = (coords.at(-1).time - coords[0].time) / 3600000; // hours
+  const avg = dist / duration || 0;
 
-  if (error) {
-    alert("Error loading rides: " + error.message);
-    return;
-  }
+  avgSpeedSpan.textContent = avg.toFixed(1);
+  topSpeedSpan.textContent = (top * 3.6).toFixed(1); // m/s to km/h
 
-  rides = data;
-  displayRides();
+  return { distance: dist, avgSpeed: avg, topSpeed: top * 3.6 };
 }
-
-// Add ride submit handler
-rideForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const destination = document.getElementById("destination").value.trim();
-  const distance = parseFloat(document.getElementById("distance").value);
-  const date = document.getElementById("date").value;
-  const notes = document.getElementById("notes").value.trim();
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    alert("Please login first to save rides.");
-    return;
-  }
-
-  const { error } = await supabase
-    .from("rides")
-    .insert([{ user_id: user.id, destination, distance, date, notes }]);
-
-  if (error) {
-    alert("Error adding ride: " + error.message);
-  } else {
-    rideForm.reset();
-    loadRides();
-  }
-});
-
-// Signup handler
-signupBtn.addEventListener("click", async () => {
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
-
-  if (!email || !password) {
-    alert("Please enter email and password.");
-    return;
-  }
-
-  const { error } = await supabase.auth.signUp({ email, password });
-  if (error) {
-    alert("Signup failed: " + error.message);
-  } else {
-    alert("Signup successful! Please check your email to confirm.");
-  }
-});
-
-// Login handler
-loginBtn.addEventListener("click", async () => {
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
-
-  if (!email || !password) {
-    alert("Please enter email and password.");
-    return;
-  }
-
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) {
-    alert("Login failed: " + error.message);
-  } else {
-    logoutBtn.style.display = "inline-block";
-    loadRides();
-  }
-});
-
-// Logout handler
-logoutBtn.addEventListener("click", async () => {
-  await supabase.auth.signOut();
-  rides = [];
-  displayRides();
-  logoutBtn.style.display = "none";
-});
-
-// On page load, check if user is logged in and load rides
-window.addEventListener("DOMContentLoaded", async () => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (user) {
-    logoutBtn.style.display = "inline-block";
-    loadRides();
-  }
-});
