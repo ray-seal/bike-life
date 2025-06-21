@@ -8,16 +8,19 @@
 </head>
 <body>
   <div class="container">
-    <label for="bgColor">Select Background Color:</label>
-<select id="bgColor">
-  <option value="white">White</option>
-  <option value="black">Black</option>
-  <option value="red">Red</option>
-  <option value="blue">Blue</option>
-  <option value="green">Green</option>
-</select>
     <h1>🏍️ Bike Life - Ride Logger</h1>
-    
+
+    <!-- 🎨 Background color selector -->
+    <label for="bgColor">Select Background Color:</label>
+    <select id="bgColor">
+      <option value="white">White</option>
+      <option value="black">Black</option>
+      <option value="red">Red</option>
+      <option value="blue">Blue</option>
+      <option value="green">Green</option>
+    </select>
+
+    <!-- 📝 Ride form -->
     <form id="rideForm">
       <input type="text" id="destination" placeholder="Destination" required />
       <input type="number" id="distance" placeholder="Distance (km)" required />
@@ -26,6 +29,7 @@
       <button type="submit">Add Ride</button>
     </form>
 
+    <!-- 📜 Ride history list -->
     <h2>Ride History</h2>
     <ul id="rideList"></ul>
   </div>
