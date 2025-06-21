@@ -54,3 +54,36 @@ button {
 .deleteBtn:hover {
   background-color: darkred;
 }
+
+/* Base Theme (Light) */
+body {
+  background-color: white;
+  color: black;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Theme Classes */
+body.dark {
+  background-color: #121212;
+  color: #f0f0f0;
+}
+
+body.kawasaki {
+  background-color: #93c90e;
+  color: #000;
+}
+
+body.suzuki {
+  background-color: #005bac;
+  color: #fff;
+}
+
+body.ducati {
+  background-color: #d40000;
+  color: #fff;
+}
+
+body.honda {
+  background-color: #ff6f00;
+  color: #000;
+}
