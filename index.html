@@ -3,20 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🏍️ Bike Life</title>
+  <title>🏍️ Bike Life Tracker</title>
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Supabase CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <header>
-    <h1>🏍️ Bike Life</h1>
+    <h1>🏍️ Bike Life Tracker</h1>
   </header>
 
-  <!-- Theme selector -->
   <section>
-    <label for="theme">Select Theme:</label>
+    <label for="theme">Theme:</label>
     <select id="theme">
       <option value="light">Light</option>
       <option value="dark">Dark</option>
@@ -27,37 +24,19 @@
     </select>
   </section>
 
-  <!-- Authentication Section -->
-  <section id="authSection">
-    <h2>Login / Signup</h2>
-    <input type="email" id="email" placeholder="Email" required />
-    <input type="password" id="password" placeholder="Password" required />
-    <div>
-      <button id="loginBtn">Login</button>
-      <button id="signupBtn">Sign Up</button>
-      <button id="logoutBtn" style="display:none;">Logout</button>
+  <section>
+    <h2>Start Ride</h2>
+    <input type="text" id="name" placeholder="Your Name" required />
+    <input type="text" id="bike" placeholder="Bike Name/Model" required />
+    <button id="startBtn">Start Tracking</button>
+    <button id="stopBtn" disabled>Stop & Save Ride</button>
+    <div id="stats">
+      <p><strong>Distance:</strong> <span id="distance">0</span> km</p>
+      <p><strong>Top Speed:</strong> <span id="topSpeed">0</span> km/h</p>
+      <p><strong>Average Speed:</strong> <span id="avgSpeed">0</span> km/h</p>
     </div>
   </section>
 
-  <!-- Ride Entry Form -->
-  <section>
-    <h2>Log a Ride</h2>
-    <form id="rideForm">
-      <input type="text" id="destination" placeholder="Destination" required />
-      <input type="number" id="distance" placeholder="Distance (km)" required />
-      <input type="date" id="date" required />
-      <textarea id="notes" placeholder="Notes (optional)"></textarea>
-      <button type="submit">Add Ride</button>
-    </form>
-  </section>
-
-  <!-- Ride List -->
-  <section>
-    <h2>Your Rides</h2>
-    <ul id="rideList"></ul>
-  </section>
-
-  <!-- App script -->
   <script src="script.js"></script>
 </body>
 </html>
