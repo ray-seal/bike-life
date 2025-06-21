@@ -1,3 +1,9 @@
+const supabase = supabase.createClient(
+  'const supabase = supabase.createClient(
+  'https://viybvomulregopxuuoak.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpeWJ2b211bHJlZ29weHV1b2FrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1MTYwNjIsImV4cCI6MjA2NjA5MjA2Mn0.QGb-_kmJcSV_-huSPod8OERvtFWSXkJprtxSnFNleMU'
+);
+
 const supabase = supabase.createClient('https://your-project-url.supabase.co', 'your-anon-key');
 
 const form = document.getElementById("rideForm");
