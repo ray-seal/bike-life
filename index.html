@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bike Life</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🏍️ Bike Life</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
@@ -13,7 +13,23 @@
   </header>
 
   <section>
-    <label for="theme">Select Theme:</label>
+    <h2>Start Ride</h2>
+    <form id="rideForm">
+      <input type="text" id="riderName" placeholder="Your name" required />
+      <input type="text" id="bikeName" placeholder="Bike model" required />
+      <button type="submit">Start Tracking Ride</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Ride Data</h2>
+    <p><strong>Distance:</strong> <span id="distance">0</span> km</p>
+    <p><strong>Top Speed:</strong> <span id="topSpeed">0</span> km/h</p>
+    <p><strong>Average Speed:</strong> <span id="avgSpeed">0</span> km/h</p>
+  </section>
+
+  <section>
+    <h2>Theme</h2>
     <select id="theme">
       <option value="light">Light</option>
       <option value="dark">Dark</option>
@@ -22,21 +38,6 @@
       <option value="ducati">Ducati Red</option>
       <option value="honda">Honda Orange</option>
     </select>
-  </section>
-
-  <section>
-    <h2>Start Your Ride</h2>
-    <input type="text" id="riderName" placeholder="Your Name" />
-    <input type="text" id="bikeModel" placeholder="Bike Model" />
-    <button id="startBtn">Start Ride</button>
-    <button id="stopBtn" disabled>Stop Ride</button>
-  </section>
-
-  <section>
-    <h2>Stats</h2>
-    <p><strong>Distance:</strong> <span id="distance">0</span> km</p>
-    <p><strong>Avg Speed:</strong> <span id="avgSpeed">0</span> km/h</p>
-    <p><strong>Top Speed:</strong> <span id="topSpeed">0</span> km/h</p>
   </section>
 
   <script src="script.js"></script>
