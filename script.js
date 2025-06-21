@@ -121,3 +121,21 @@ document.getElementById('logoutBtn').onclick = async () => {
   await supabase.auth.signOut();
   location.reload();
 };
+
+async function loadRides() {
+  const user = (await supabase.auth.getUser()).data.user;
+  if (!user) return;
+
+  const { data, error } = await supabase
+    .from("rides")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("date", { ascending: false });
+
+  if (error) {
+    console.error("Error loading rides:", error.message);
+  } else {
+    rides = data;
+    displayRides();
+  }
+}
