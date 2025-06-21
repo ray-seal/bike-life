@@ -74,3 +74,18 @@ function displayRides() {
     });
   });
 }
+
+const themeSelect = document.getElementById("theme");
+
+// Load saved theme from localStorage
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme) {
+  document.body.className = savedTheme;
+  themeSelect.value = savedTheme;
+}
+
+// On change, update theme and save it
+themeSelect.addEventListener("change", function () {
+  document.body.className = this.value;
+  localStorage.setItem("theme", this.value);
+});
