@@ -17,14 +17,23 @@ const logoutBtn = document.getElementById("logoutBtn");
 let rides = [];
 
 // Theme logic
+const themes = ["light", "dark", "kawasaki", "suzuki", "ducati", "honda"];
+
 const savedTheme = localStorage.getItem("theme");
-if (savedTheme) {
-  document.body.className = savedTheme;
+if (savedTheme && themes.includes(savedTheme)) {
+  document.body.classList.add(savedTheme);
   themeSelect.value = savedTheme;
+} else {
+  // Default to light if no saved or invalid theme
+  document.body.classList.add("light");
+  themeSelect.value = "light";
 }
 
 themeSelect.addEventListener("change", function () {
-  document.body.className = this.value;
+  // Remove all theme classes first
+  themes.forEach(t => document.body.classList.remove(t));
+  // Add the selected theme
+  document.body.classList.add(this.value);
   localStorage.setItem("theme", this.value);
 });
 
