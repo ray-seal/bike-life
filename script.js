@@ -13,10 +13,23 @@ function displayRides() {
     const li = document.createElement("li");
     li.innerHTML = `
       <strong>${ride.date}</strong> - ${ride.destination} (${ride.distance} km)<br/>
-      ${ride.notes ? `<em>${ride.notes}</em>` : ""}
+      ${ride.notes ? `<em>${ride.notes}</em><br/>` : ""}
+      <button class="deleteBtn" data-index="${index}">Delete</button>
     `;
     rideList.appendChild(li);
   });
+
+  // Add event listeners to all delete buttons
+  const deleteButtons = document.querySelectorAll(".deleteBtn");
+  deleteButtons.forEach(button => {
+    button.addEventListener("click", (e) => {
+      const index = e.target.getAttribute("data-index");
+      rides.splice(index, 1); // remove the ride
+      saveRides(); // update localStorage
+      displayRides(); // re-render the list
+    });
+  });
+}
 }
 
 form.addEventListener("submit", (e) => {
