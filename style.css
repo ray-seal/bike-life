@@ -1,113 +1,111 @@
+/* Base styles */
 body {
-  font-family: sans-serif;
-  background: #f3f3f3;
-  padding: 20px;
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  background-color: #fff;
+  color: #333;
+  transition: background-color 0.3s, color 0.3s;
 }
 
-.container {
-  max-width: 600px;
-  margin: auto;
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
+header h1 {
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-form input, form textarea, form button {
-  display: block;
-  width: 100%;
-  margin-bottom: 10px;
-  padding: 10px;
-  font-size: 1em;
+section {
+  max-width: 400px;
+  margin: 0 auto 40px;
 }
 
-select {
-  padding: 10px;
-  font-size: 1em;
-  margin-bottom: 20px;
-}
-
-button {
-  background: #000;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-#rideList li {
-  margin-bottom: 10px;
-  padding: 10px;
-  background: #e2e2e2;
-  border-radius: 4px;
-}
-
-.deleteBtn {
-  margin-top: 8px;
-  padding: 6px 10px;
-  font-size: 0.9em;
-  background-color: crimson;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.deleteBtn:hover {
-  background-color: darkred;
-}
-
-/* Base Theme (Light) */
-body {
-  background-color: white;
-  color: black;
-  transition: background 0.3s, color 0.3s;
-}
-
-/* Theme Classes */
-body.dark {
-  background-color: #121212;
-  color: #f0f0f0;
-}
-
-body.kawasaki {
-  background-color: #93c90e;
-  color: #000;
-}
-
-body.suzuki {
-  background-color: #005bac;
-  color: #fff;
-}
-
-body.ducati {
-  background-color: #d40000;
-  color: #fff;
-}
-
-body.honda {
-  background-color: #ff6f00;
-  color: #000;
+h2 {
+  margin-bottom: 15px;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 5px;
 }
 
 input,
 textarea,
 select,
 button {
+  width: 100%;
   padding: 10px;
-  font-size: 1em;
-  margin-top: 10px;
   margin-bottom: 15px;
   border-radius: 5px;
   border: 1px solid #ccc;
-  display: block;
-  width: 100%;
+  font-size: 1em;
   box-sizing: border-box;
-  transition: background 0.3s, color 0.3s, border 0.3s;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
-/* DARK THEME */
-body.dark input,
-body.dark textarea,
-body.dark select,
+button {
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#rideList {
+  list-style: none;
+  padding: 0;
+}
+
+#rideList li {
+  background-color: #f7f7f7;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  position: relative;
+}
+
+#rideList button.deleteBtn {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background-color: #dc3545;
+  border: none;
+  color: white;
+  padding: 5px 8px;
+  font-size: 0.8em;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#rideList button.deleteBtn:hover {
+  background-color: #a71d2a;
+}
+
+/* Themes */
+
+/* Light (default) */
+body.light {
+  background-color: #fff;
+  color: #333;
+}
+
+body.light input,
+body.light textarea,
+body.light select {
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+body.light button {
+  background-color: #007bff;
+  color: white;
+}
+
+body.light button.deleteBtn {
+  background-color: #dc3545;
+}
+
+/* Dark theme */
 body.dark {
   background-color: #121212;
   color: #f0f0f0;
@@ -127,26 +125,62 @@ body.dark button {
   border: 1px solid #555;
 }
 
-/* KAWASAKI GREEN */
-body.kawasaki input,
-body.kawasaki textarea,
-body.kawasaki select {
+body.dark #rideList li {
+  background-color: #222;
+}
+
+body.dark button.deleteBtn {
+  background-color: #b33939;
+}
+
+body.dark button.deleteBtn:hover {
+  background-color: #7a2525;
+}
+
+/* Kawasaki Green */
+body.kawasaki {
   background-color: #dff5b0;
   color: #000;
 }
 
+body.kawasaki input,
+body.kawasaki textarea,
+body.kawasaki select {
+  background-color: #e6f2a6;
+  color: #000;
+  border: 1px solid #a2c600;
+}
+
 body.kawasaki button {
-  background-color: #b2d235;
+  background-color: #7bb700;
   color: #000;
   border: 1px solid #779d00;
 }
 
-/* SUZUKI BLUE */
+body.kawasaki #rideList li {
+  background-color: #cde46d;
+}
+
+body.kawasaki button.deleteBtn {
+  background-color: #558400;
+}
+
+body.kawasaki button.deleteBtn:hover {
+  background-color: #3a5c00;
+}
+
+/* Suzuki Blue */
+body.suzuki {
+  background-color: #c2dfff;
+  color: #000;
+}
+
 body.suzuki input,
 body.suzuki textarea,
 body.suzuki select {
-  background-color: #c2dfff;
+  background-color: #d7e9ff;
   color: #000;
+  border: 1px solid #005bac;
 }
 
 body.suzuki button {
@@ -155,12 +189,30 @@ body.suzuki button {
   border: 1px solid #005bac;
 }
 
-/* DUCATI RED */
+body.suzuki #rideList li {
+  background-color: #a3c0ff;
+}
+
+body.suzuki button.deleteBtn {
+  background-color: #004f8c;
+}
+
+body.suzuki button.deleteBtn:hover {
+  background-color: #00366a;
+}
+
+/* Ducati Red */
+body.ducati {
+  background-color: #ffd6d6;
+  color: #000;
+}
+
 body.ducati input,
 body.ducati textarea,
 body.ducati select {
-  background-color: #ffd6d6;
+  background-color: #ffcccc;
   color: #000;
+  border: 1px solid #b10000;
 }
 
 body.ducati button {
@@ -169,16 +221,46 @@ body.ducati button {
   border: 1px solid #b10000;
 }
 
-/* HONDA ORANGE */
+body.ducati #rideList li {
+  background-color: #ff9999;
+}
+
+body.ducati button.deleteBtn {
+  background-color: #800000;
+}
+
+body.ducati button.deleteBtn:hover {
+  background-color: #550000;
+}
+
+/* Honda Orange */
+body.honda {
+  background-color: #ffe5cc;
+  color: #000;
+}
+
 body.honda input,
 body.honda textarea,
 body.honda select {
-  background-color: #ffe5cc;
+  background-color: #ffebd6;
   color: #000;
+  border: 1px solid #cc6a00;
 }
 
 body.honda button {
   background-color: #ff8c00;
   color: #fff;
   border: 1px solid #cc6a00;
+}
+
+body.honda #rideList li {
+  background-color: #ffbb77;
+}
+
+body.honda button.deleteBtn {
+  background-color: #994f00;
+}
+
+body.honda button.deleteBtn:hover {
+  background-color: #663400;
 }
