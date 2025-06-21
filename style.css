@@ -103,3 +103,82 @@ button {
   box-sizing: border-box;
   transition: background 0.3s, color 0.3s, border 0.3s;
 }
+
+/* DARK THEME */
+body.dark input,
+body.dark textarea,
+body.dark select,
+body.dark {
+  background-color: #121212;
+  color: #f0f0f0;
+}
+
+body.dark input,
+body.dark textarea,
+body.dark select {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+  border: 1px solid #444;
+}
+
+body.dark button {
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #555;
+}
+
+/* KAWASAKI GREEN */
+body.kawasaki input,
+body.kawasaki textarea,
+body.kawasaki select {
+  background-color: #dff5b0;
+  color: #000;
+}
+
+body.kawasaki button {
+  background-color: #b2d235;
+  color: #000;
+  border: 1px solid #779d00;
+}
+
+/* SUZUKI BLUE */
+body.suzuki input,
+body.suzuki textarea,
+body.suzuki select {
+  background-color: #c2dfff;
+  color: #000;
+}
+
+body.suzuki button {
+  background-color: #007bff;
+  color: #fff;
+  border: 1px solid #005bac;
+}
+
+/* DUCATI RED */
+body.ducati input,
+body.ducati textarea,
+body.ducati select {
+  background-color: #ffd6d6;
+  color: #000;
+}
+
+body.ducati button {
+  background-color: #ff4c4c;
+  color: #fff;
+  border: 1px solid #b10000;
+}
+
+/* HONDA ORANGE */
+body.honda input,
+body.honda textarea,
+body.honda select {
+  background-color: #ffe5cc;
+  color: #000;
+}
+
+body.honda button {
+  background-color: #ff8c00;
+  color: #fff;
+  border: 1px solid #cc6a00;
+}
