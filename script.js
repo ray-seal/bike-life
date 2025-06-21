@@ -36,3 +36,19 @@ form.addEventListener("submit", (e) => {
 });
 
 displayRides();
+
+const bgColorSelect = document.getElementById("bgColor");
+
+bgColorSelect.addEventListener("change", function () {
+  document.body.style.backgroundColor = this.value;
+
+  // Optional: Save to localStorage to remember the user's choice
+  localStorage.setItem("bgColor", this.value);
+});
+
+// Restore background color on page load
+const savedBg = localStorage.getItem("bgColor");
+if (savedBg) {
+  document.body.style.backgroundColor = savedBg;
+  bgColorSelect.value = savedBg;
+}
