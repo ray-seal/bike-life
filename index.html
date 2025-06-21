@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🏍️ Bike Life Tracker</title>
+  <title>Bike Life GPS</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
   <header>
-    <h1>🏍️ Bike Life Tracker</h1>
+    <h1>🏍️ Bike Life GPS Tracker</h1>
   </header>
 
   <section>
-    <label for="theme">Theme:</label>
+    <label for="theme">Select Theme:</label>
     <select id="theme">
       <option value="light">Light</option>
       <option value="dark">Dark</option>
@@ -25,16 +25,12 @@
   </section>
 
   <section>
-    <h2>Start Ride</h2>
-    <input type="text" id="name" placeholder="Your Name" required />
-    <input type="text" id="bike" placeholder="Bike Name/Model" required />
-    <button id="startBtn">Start Tracking</button>
-    <button id="stopBtn" disabled>Stop & Save Ride</button>
-    <div id="stats">
-      <p><strong>Distance:</strong> <span id="distance">0</span> km</p>
-      <p><strong>Top Speed:</strong> <span id="topSpeed">0</span> km/h</p>
-      <p><strong>Average Speed:</strong> <span id="avgSpeed">0</span> km/h</p>
-    </div>
+    <input type="text" id="riderName" placeholder="Your name" />
+    <input type="text" id="bikeModel" placeholder="Bike model" />
+    <button id="startBtn">Start Ride</button>
+    <button id="stopBtn" disabled>Stop Ride</button>
+    <p id="status">Waiting to start...</p>
+    <ul id="rideData"></ul>
   </section>
 
   <script src="script.js"></script>
