@@ -51,20 +51,26 @@ form.addEventListener("submit", (e) => {
   form.reset();
 });
 
-displayRides();
+function displayRides() {
+  rideList.innerHTML = "";
+  rides.forEach((ride, index) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <strong>${ride.date}</strong> - ${ride.destination} (${ride.distance} km)<br/>
+      ${ride.notes ? `<em>${ride.notes}</em><br/>` : ""}
+      <button class="deleteBtn" data-index="${index}">Delete</button>
+    `;
+    rideList.appendChild(li);
+  });
 
-const bgColorSelect = document.getElementById("bgColor");
-
-bgColorSelect.addEventListener("change", function () {
-  document.body.style.backgroundColor = this.value;
-
-  // Optional: Save to localStorage to remember the user's choice
-  localStorage.setItem("bgColor", this.value);
-});
-
-// Restore background color on page load
-const savedBg = localStorage.getItem("bgColor");
-if (savedBg) {
-  document.body.style.backgroundColor = savedBg;
-  bgColorSelect.value = savedBg;
+  // Add event listeners to all delete buttons
+  const deleteButtons = document.querySelectorAll(".deleteBtn");
+  deleteButtons.forEach(button => {
+    button.addEventListener("click", (e) => {
+      const index = e.target.getAttribute("data-index");
+      rides.splice(index, 1); // remove the ride
+      saveRides(); // update localStorage
+      displayRides(); // re-render the list
+    });
+  });
 }
