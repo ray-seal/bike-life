@@ -1,3 +1,5 @@
+const supabase = supabase.createClient('https://your-project-url.supabase.co', 'your-anon-key');
+
 const form = document.getElementById("rideForm");
 const rideList = document.getElementById("rideList");
 
