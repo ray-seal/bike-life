@@ -1,4 +1,3 @@
-/* Base styles */
 body {
   font-family: Arial, sans-serif;
   margin: 20px;
@@ -7,260 +6,80 @@ body {
   transition: background-color 0.3s, color 0.3s;
 }
 
-header h1 {
+h1 {
   text-align: center;
-  margin-bottom: 30px;
 }
 
 section {
   max-width: 400px;
-  margin: 0 auto 40px;
+  margin: 0 auto 30px;
 }
 
-h2 {
-  margin-bottom: 15px;
-  border-bottom: 2px solid #ccc;
-  padding-bottom: 5px;
-}
-
-input,
-textarea,
-select,
-button {
+input, select, button {
   width: 100%;
+  margin-bottom: 10px;
   padding: 10px;
-  margin-bottom: 15px;
+  font-size: 1em;
   border-radius: 5px;
   border: 1px solid #ccc;
-  font-size: 1em;
   box-sizing: border-box;
-  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 button {
-  cursor: pointer;
-  background-color: #007bff;
+  background: #007bff;
   color: white;
-  border: none;
   font-weight: bold;
+  border: none;
+  cursor: pointer;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background: #0056b3;
 }
 
-#rideList {
-  list-style: none;
-  padding: 0;
-}
-
-#rideList li {
-  background-color: #f7f7f7;
-  margin-bottom: 10px;
+.output {
+  margin-top: 10px;
   padding: 10px;
+  background: #f0f0f0;
   border-radius: 5px;
-  position: relative;
 }
 
-#rideList button.deleteBtn {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  background-color: #dc3545;
-  border: none;
-  color: white;
-  padding: 5px 8px;
-  font-size: 0.8em;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
+/* THEME OVERRIDES */
 
-#rideList button.deleteBtn:hover {
-  background-color: #a71d2a;
-}
-
-/* Themes */
-
-/* Light (default) */
-body.light {
-  background-color: #fff;
-  color: #333;
-}
-
-body.light input,
-body.light textarea,
-body.light select {
-  background-color: #fff;
-  color: #333;
-  border: 1px solid #ccc;
-}
-
-body.light button {
-  background-color: #007bff;
-  color: white;
-}
-
-body.light button.deleteBtn {
-  background-color: #dc3545;
-}
-
-/* Dark theme */
-body.dark {
-  background-color: #121212;
-  color: #f0f0f0;
-}
-
-body.dark input,
-body.dark textarea,
-body.dark select {
-  background-color: #1e1e1e;
-  color: #f0f0f0;
-  border: 1px solid #444;
-}
-
-body.dark button {
-  background-color: #333;
-  color: #fff;
-  border: 1px solid #555;
-}
-
-body.dark #rideList li {
-  background-color: #222;
-}
-
-body.dark button.deleteBtn {
-  background-color: #b33939;
-}
-
-body.dark button.deleteBtn:hover {
-  background-color: #7a2525;
-}
-
-/* Kawasaki Green */
 body.kawasaki {
-  background-color: #dff5b0;
+  background: #dff5b0;
   color: #000;
 }
+body.kawasaki button { background: #7bb700; }
 
-body.kawasaki input,
-body.kawasaki textarea,
-body.kawasaki select {
-  background-color: #e6f2a6;
-  color: #000;
-  border: 1px solid #a2c600;
-}
-
-body.kawasaki button {
-  background-color: #7bb700;
-  color: #000;
-  border: 1px solid #779d00;
-}
-
-body.kawasaki #rideList li {
-  background-color: #cde46d;
-}
-
-body.kawasaki button.deleteBtn {
-  background-color: #558400;
-}
-
-body.kawasaki button.deleteBtn:hover {
-  background-color: #3a5c00;
-}
-
-/* Suzuki Blue */
 body.suzuki {
-  background-color: #c2dfff;
+  background: #c2dfff;
   color: #000;
 }
+body.suzuki button { background: #007bff; }
 
-body.suzuki input,
-body.suzuki textarea,
-body.suzuki select {
-  background-color: #d7e9ff;
-  color: #000;
-  border: 1px solid #005bac;
-}
-
-body.suzuki button {
-  background-color: #007bff;
-  color: #fff;
-  border: 1px solid #005bac;
-}
-
-body.suzuki #rideList li {
-  background-color: #a3c0ff;
-}
-
-body.suzuki button.deleteBtn {
-  background-color: #004f8c;
-}
-
-body.suzuki button.deleteBtn:hover {
-  background-color: #00366a;
-}
-
-/* Ducati Red */
 body.ducati {
-  background-color: #ffd6d6;
+  background: #ffd6d6;
   color: #000;
 }
+body.ducati button { background: #ff4c4c; }
 
-body.ducati input,
-body.ducati textarea,
-body.ducati select {
-  background-color: #ffcccc;
-  color: #000;
-  border: 1px solid #b10000;
-}
-
-body.ducati button {
-  background-color: #ff4c4c;
-  color: #fff;
-  border: 1px solid #b10000;
-}
-
-body.ducati #rideList li {
-  background-color: #ff9999;
-}
-
-body.ducati button.deleteBtn {
-  background-color: #800000;
-}
-
-body.ducati button.deleteBtn:hover {
-  background-color: #550000;
-}
-
-/* Honda Orange */
 body.honda {
-  background-color: #ffe5cc;
+  background: #ffe5cc;
   color: #000;
 }
+body.honda button { background: #ff8c00; }
 
-body.honda input,
-body.honda textarea,
-body.honda select {
-  background-color: #ffebd6;
-  color: #000;
-  border: 1px solid #cc6a00;
+body.dark {
+  background: #121212;
+  color: #f0f0f0;
 }
-
-body.honda button {
-  background-color: #ff8c00;
+body.dark input, body.dark select {
+  background: #1e1e1e;
   color: #fff;
-  border: 1px solid #cc6a00;
+  border-color: #444;
 }
-
-body.honda #rideList li {
-  background-color: #ffbb77;
-}
-
-body.honda button.deleteBtn {
-  background-color: #994f00;
-}
-
-body.honda button.deleteBtn:hover {
-  background-color: #663400;
+body.dark button {
+  background: #444;
+  color: #fff;
 }
