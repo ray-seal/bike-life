@@ -87,3 +87,19 @@ body.honda {
   background-color: #ff6f00;
   color: #000;
 }
+
+input,
+textarea,
+select,
+button {
+  padding: 10px;
+  font-size: 1em;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  transition: background 0.3s, color 0.3s, border 0.3s;
+}
