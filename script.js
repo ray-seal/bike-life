@@ -16,31 +16,56 @@ const logoutBtn = document.getElementById("logoutBtn");
 
 let rides = [];
 
-// Theme logic
-const themes = ["light", "dark", "kawasaki", "suzuki", "ducati", "honda"];
+// Theme logic: apply saved theme on load and setup change listener
+document.addEventListener("DOMContentLoaded", () => {
+  // Apply saved theme from localStorage
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme) {
+    document.body.className = ""; // clear existing classes
+    document.body.classList.add(savedTheme);
+    themeSelect.value = savedTheme;
+  }
 
-const savedTheme = localStorage.getItem("theme");
-if (savedTheme && themes.includes(savedTheme)) {
-  document.body.classList.add(savedTheme);
-  themeSelect.value = savedTheme;
-} else {
-  // Default to light if no saved or invalid theme
-  document.body.classList.add("light");
-  themeSelect.value = "light";
-}
+  // Load rides if user is logged in
+  loadRides();
+});
 
 themeSelect.addEventListener("change", function () {
-  // Remove all theme classes first
-  themes.forEach(t => document.body.classList.remove(t));
-  // Add the selected theme
+  // Clear all theme classes from body
+  document.body.className = "";
+  // Add selected theme class
   document.body.classList.add(this.value);
+  // Save selected theme
   localStorage.setItem("theme", this.value);
+
+  // Show visible feedback on page (bottom-right corner)
+  let feedback = document.getElementById("themeFeedback");
+  if (!feedback) {
+    feedback = document.createElement("div");
+    feedback.id = "themeFeedback";
+    feedback.style.position = "fixed";
+    feedback.style.bottom = "10px";
+    feedback.style.right = "10px";
+    feedback.style.backgroundColor = "rgba(0,0,0,0.7)";
+    feedback.style.color = "white";
+    feedback.style.padding = "5px 10px";
+    feedback.style.borderRadius = "5px";
+    feedback.style.zIndex = 1000;
+    document.body.appendChild(feedback);
+  }
+  feedback.textContent = `Theme changed to: ${this.value}`;
 });
 
 // Load rides from Supabase
 async function loadRides() {
   const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return;
+  if (!userData.user) {
+    rideList.innerHTML = "<li>Please log in to see your rides.</li>";
+    logoutBtn.style.display = "none";
+    return;
+  }
+
+  logoutBtn.style.display = "inline";
 
   const { data, error } = await supabase
     .from("rides")
@@ -50,6 +75,7 @@ async function loadRides() {
 
   if (error) {
     console.error("Error loading rides:", error.message);
+    rideList.innerHTML = "<li>Error loading rides.</li>";
   } else {
     rides = data;
     displayRides();
@@ -59,6 +85,10 @@ async function loadRides() {
 // Display rides
 function displayRides() {
   rideList.innerHTML = "";
+  if (rides.length === 0) {
+    rideList.innerHTML = "<li>No rides logged yet.</li>";
+    return;
+  }
   rides.forEach((ride) => {
     const li = document.createElement("li");
     li.innerHTML = `
@@ -86,16 +116,21 @@ function displayRides() {
 rideForm.addEventListener("submit", async function (e) {
   e.preventDefault();
 
-  const destination = document.getElementById("destination").value;
+  const destination = document.getElementById("destination").value.trim();
   const distance = parseFloat(document.getElementById("distance").value);
   const date = document.getElementById("date").value;
-  const notes = document.getElementById("notes").value;
+  const notes = document.getElementById("notes").value.trim();
 
   const { data: userData } = await supabase.auth.getUser();
   const user = userData.user;
 
   if (!user) {
     alert("You must be logged in to save a ride.");
+    return;
+  }
+
+  if (!destination || !distance || !date) {
+    alert("Please fill in all required fields.");
     return;
   }
 
@@ -119,10 +154,15 @@ rideForm.addEventListener("submit", async function (e) {
 
 // Signup
 signupBtn.addEventListener("click", async () => {
-  const { error } = await supabase.auth.signUp({
-    email: emailInput.value,
-    password: passwordInput.value,
-  });
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!email || !password) {
+    alert("Please enter email and password.");
+    return;
+  }
+
+  const { error } = await supabase.auth.signUp({ email, password });
 
   if (error) {
     alert("Signup error: " + error.message);
@@ -133,10 +173,15 @@ signupBtn.addEventListener("click", async () => {
 
 // Login
 loginBtn.addEventListener("click", async () => {
-  const { error } = await supabase.auth.signInWithPassword({
-    email: emailInput.value,
-    password: passwordInput.value,
-  });
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!email || !password) {
+    alert("Please enter email and password.");
+    return;
+  }
+
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
     alert("Login error: " + error.message);
@@ -152,13 +197,4 @@ logoutBtn.addEventListener("click", async () => {
   rides = [];
   displayRides();
   logoutBtn.style.display = "none";
-});
-
-// Auto-load rides if already logged in
-window.addEventListener("DOMContentLoaded", async () => {
-  const { data: userData } = await supabase.auth.getUser();
-  if (userData.user) {
-    logoutBtn.style.display = "inline";
-    loadRides();
-  }
 });
