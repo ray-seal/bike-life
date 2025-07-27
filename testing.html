@@ -27,11 +27,11 @@
   </div>
   
   <script>
-    // 1. Replace with your actual Supabase project credentials
+    // 1. Your actual Supabase project credentials
     const SUPABASE_URL = 'https://bdbdvbwnvhdvvymmrhus.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkYmR2YndudmhkdnZ5bW1yaHVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM1NzI1ODIsImV4cCI6MjA2OTE0ODU4Mn0.Z1s5[...]';
 
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     function addRowToTable(Name, Bike, Comments) {
       const table = document.getElementById("dataTable");
@@ -66,7 +66,7 @@
       const Bike = document.getElementById("bike").value;
       const Comments = document.getElementById("comments").value;
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('bike_life')
         .insert([{ Name, Bike, Comments }]);
 
@@ -76,7 +76,7 @@
       }
 
       document.getElementById("myForm").reset();
-      loadTableData();
+      await loadTableData();
     });
 
     window.onload = loadTableData;
