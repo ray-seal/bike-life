@@ -1,19 +1,38 @@
+<!DOCTYPE html>
+
 <body>
-  <form id=myForm">
-  <label for="Name">Enter Name:</label>
+  <form id="myForm">
+    <label for="Name">Enter Name:</label>
     <input type="text" id="name"><br><br>
     <label for="Bike">Enter Bike:</label>
     <input type="text" id="bike"><br><br>
     <input type="submit">
   </form>
 
-<div id="table">
-  <h2>User Log</h2>
-  <table id="dataTable">
-    <tr>
-      <th>Name</th>
-      <th>Bike</th>
-    </tr>
-  </table>
-</div>  
+  <div id="table">
+    <h2>User Log</h2>
+    <table id="dataTable">
+      <tr>
+        <th>Name</th>
+        <th>Bike</th>
+      </tr>
+    </table>
+  </div>
+  
+  <script>
+    document.getElementById("myForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const name = document.getElementById("name").value;
+      const bike = document.getElementById("bike").value;
+      const table = document.getElementById("dataTable");
+      const row = table.insertRow(-1);
+      const nameCell = row.insertCell(0);
+      const bikeCell = row.insertCell(1);
+      nameCell.textContent = name;
+      bikeCell.textContent = bike;
+      document.getElementById("myForm").reset();
+    });
+  </script>
 </body>
+
+</html>
