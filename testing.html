@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Comments</title>
+  <title>Comments Section</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
@@ -52,7 +52,7 @@
     while(table.rows.length > 1) table.deleteRow(1);
 
     let { data, error } = await supabase
-      .from('"bike life"') // <-- NOTE THE QUOTES
+      .from('"bike_life"') // <-- NOTE THE QUOTES
       .select('name, bike, comments')
       .order('id', { ascending: true });
 
@@ -74,7 +74,7 @@
     const comments = document.getElementById("comments").value;
 
     const { error } = await supabase
-      .from('"bike life"')
+      .from('"bike_life"')
       .insert([{ Name, Bike, Comments }]);
 
     if (error) {
