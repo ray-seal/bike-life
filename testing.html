@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Bike Life User Log</title>
+  <title>Bike Life Comments</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
@@ -19,6 +19,7 @@
       <tr>
         <th>Name</th>
         <th>Bike</th>
+        <th>Comments</th>
       </tr>
     </table>
   </div>
@@ -32,13 +33,15 @@
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // 3. Function to add a row to the table in the DOM
-    function addRowToTable(name, bike) {
+    function addRowToTable(name, bike, comments) {
       const table = document.getElementById("dataTable");
       const row = table.insertRow(-1);
       const nameCell = row.insertCell(0);
       const bikeCell = row.insertCell(1);
+      const commentsCell = row.insertCell(2);
       nameCell.textContent = name;
       bikeCell.textContent = bike;
+      commentsCell.texcommentsCell.textContent = comments;
     }
 
     // 4. Fetch and display all data from Supabase
@@ -50,7 +53,7 @@
       // Fetch from Supabase
       let { data, error } = await supabase
         .from('user_log')
-        .select('name, bike')
+        .select('name, bike, comments')
         .order('id', { ascending: true });
 
       if (error) {
@@ -66,11 +69,13 @@
       event.preventDefault();
       const name = document.getElementById("name").value;
       const bike = document.getElementById("bike").value;
+      const comments = document.gdocument.getElementById("comments").value;
+
 
       // Insert into Supabase
       const { error } = await supabase
         .from('user_log')
-        .insert([{ name, bike }]);
+        .insert([{ name, bike, comments }]);
 
       if (error) {
         alert('Error saving data: ' + error.message);
