@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Photo Album Test</title>
+  <meta charset="UTF-8" />
+  <title>Photo Album v9</title>
   <style>
     body { background: #111; color: #33ff33; font-family: monospace; }
     .album-img { padding: 10px; border: 1px solid #33ff33; margin: 10px; background: #222; border-radius: 8px; width: 250px; }
@@ -29,7 +29,7 @@
   </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
-const supabase = supabase.createClient(
+const supabaseClient = supabase.createClient(
   'https://bdbdvbwnvhdvvymmrhus.supabase.co',
   'sb_publishable_GWagUQzrBmaIakjjNA-7qg_glvd_YtI'
 );
@@ -45,16 +45,20 @@ const commentInput = commentForm.querySelector('textarea');
 
 // Likes
 async function fetchLikes() {
-  let { data, error } = await supabase.from('image_likes').select('likes').eq('img_id', imgId).maybeSingle();
+  let { data, error } = await supabaseClient
+    .from('image_likes').select('likes').eq('img_id', imgId).maybeSingle();
   countSpan.textContent = data && data.likes ? data.likes : 0;
 }
 likeBtn.addEventListener('click', async () => {
-  let { data, error } = await supabase.from('image_likes').select('likes').eq('img_id', imgId).maybeSingle();
+  let { data, error } = await supabaseClient
+    .from('image_likes').select('likes').eq('img_id', imgId).maybeSingle();
   if (!data) {
-    let { error: insertErr } = await supabase.from('image_likes').insert({ img_id: imgId, likes: 1 });
+    let { error: insertErr } = await supabaseClient
+      .from('image_likes').insert({ img_id: imgId, likes: 1 });
     if (insertErr) alert('Like insert error: ' + insertErr.message);
   } else {
-    let { error: updateErr } = await supabase.from('image_likes').update({ likes: data.likes + 1 }).eq('img_id', imgId);
+    let { error: updateErr } = await supabaseClient
+      .from('image_likes').update({ likes: data.likes + 1 }).eq('img_id', imgId);
     if (updateErr) alert('Like update error: ' + updateErr.message);
   }
   fetchLikes();
@@ -62,7 +66,8 @@ likeBtn.addEventListener('click', async () => {
 
 // Comments
 async function fetchComments() {
-  let { data, error } = await supabase.from('image_comments')
+  let { data, error } = await supabaseClient
+    .from('image_comments')
     .select('name, comment, created_at')
     .eq('img_id', imgId)
     .order('created_at', { ascending: true });
@@ -82,7 +87,8 @@ commentForm.addEventListener('submit', async (e) => {
   const name = nameInput.value.trim();
   const comment = commentInput.value.trim();
   if (!name || !comment) return;
-  let { error } = await supabase.from('image_comments').insert({ img_id: imgId, name, comment });
+  let { error } = await supabaseClient
+    .from('image_comments').insert({ img_id: imgId, name, comment });
   if (error) alert('Comment error: ' + error.message);
   nameInput.value = '';
   commentInput.value = '';
