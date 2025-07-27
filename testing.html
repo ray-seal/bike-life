@@ -27,7 +27,7 @@
   </div>
   
   <script>
-    // Use your actual Supabase credentials
+    // 1. Replace with your actual Supabase project credentials
     const SUPABASE_URL = 'https://bdbdvbwnvhdvvymmrhus.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkYmR2YndudmhkdnZ5bW1yaHVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM1NzI1ODIsImV4cCI6MjA2OTE0ODU4Mn0.Z1s5[...]';
 
@@ -36,19 +36,15 @@
     function addRowToTable(Name, Bike, Comments) {
       const table = document.getElementById("dataTable");
       const row = table.insertRow(-1);
-      const nameCell = row.insertCell(0);
-      const bikeCell = row.insertCell(1);
-      const commentsCell = row.insertCell(2);
-      nameCell.textContent = Name;
-      bikeCell.textContent = Bike;
-      commentsCell.textContent = Comments;
+      row.insertCell(0).textContent = Name;
+      row.insertCell(1).textContent = Bike;
+      row.insertCell(2).textContent = Comments;
     }
 
     async function loadTableData() {
       const table = document.getElementById("dataTable");
-      while(table.rows.length > 1) table.deleteRow(1);
+      while (table.rows.length > 1) table.deleteRow(1);
 
-      // Use exact column names with quotes
       let { data, error } = await supabase
         .from('bike_life')
         .select('"Name", "Bike", "Comments"')
@@ -70,7 +66,6 @@
       const Bike = document.getElementById("bike").value;
       const Comments = document.getElementById("comments").value;
 
-      // Use exact column names in insert
       const { error } = await supabase
         .from('bike_life')
         .insert([{ Name, Bike, Comments }]);
