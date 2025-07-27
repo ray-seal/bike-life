@@ -39,6 +39,8 @@
       padding: 8px;
       background: #111;
       text-align: center;
+      vertical-align: top;
+      width: 230px;
     }
     .like-btn {
       background: #222;
@@ -59,6 +61,51 @@
       margin-left: 8px;
       color: #00ff00;
       font-weight: bold;
+    }
+    .comment-section {
+      background: #222;
+      border-radius: 8px;
+      margin-top: 10px;
+      padding: 10px;
+      text-align: left;
+    }
+    .comment-list {
+      margin: 0 0 10px 0;
+      padding: 0;
+      list-style: none;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+    .comment-list li {
+      margin-bottom: 8px;
+      border-bottom: 1px dotted #33ff33;
+      padding-bottom: 4px;
+      font-size: 0.98em;
+      word-break: break-word;
+    }
+    .comment-form textarea {
+      width: 95%;
+      padding: 5px;
+      margin-bottom: 4px;
+      background: #111;
+      color: #33ff33;
+      border: 1px solid #33ff33;
+      border-radius: 4px;
+      resize: vertical;
+    }
+    .comment-form button {
+      background: #222;
+      color: #33ff33;
+      border: 1px solid #33ff33;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 2px 10px;
+      transition: background 0.2s;
+      font-size: 1em;
+    }
+    .comment-form button:hover {
+      background: #33ff33;
+      color: #000;
     }
   </style>
 </head>
@@ -81,7 +128,6 @@
 <p>Below are some of the photos shared by group members of their beloved machines. Go ahead and give them a like, I'm sure they'll appreciate it.</p>
 
 <div id="album-container">
-  <!-- Each image wrapped in .album-img for like functionality -->
   <div class="album-img" data-img-id="adamvictory.jpg">
     <img src="images/adamvictory.jpg" width="100%">
     <button class="like-btn">👍 Like</button>
@@ -127,7 +173,7 @@
     <button class="like-btn">👍 Like</button>
     <span class="like-count">0</span>
   </div>
-  <!-- Repeat for all other images as below: -->
+  <!-- Example additional images -->
   <div class="album-img" data-img-id="IMG1.jpg"><img src="images/IMG1.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
   <div class="album-img" data-img-id="IMG2.jpg"><img src="images/IMG2.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
   <div class="album-img" data-img-id="IMG3.jpg"><img src="images/IMG3.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
@@ -157,7 +203,6 @@
 <br><br>
 <hr>
 
-<!-- Supabase JS CDN and Like Button Script -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
 <script>
   // Replace with your Supabase info!
@@ -173,32 +218,97 @@
       const countSpan = imgDiv.querySelector('.like-count');
       const likeBtn = imgDiv.querySelector('.like-btn');
 
-      // Fetch current like count
+      // --- Likes Logic ---
+      // Fetch current like count, handle no row
       let { data, error } = await supabase
         .from('image_likes')
         .select('likes')
         .eq('img_id', imgId)
-        .single();
-      countSpan.textContent = data ? data.likes : 0;
+        .maybeSingle();
+
+      let currentLikes = data && data.likes ? data.likes : 0;
+      countSpan.textContent = currentLikes;
 
       likeBtn.addEventListener('click', async () => {
-        // Fetch current likes
-        let { data, error } = await supabase
+        // On first like, insert row. Otherwise, update.
+        let { data: likeRow, error: getErr } = await supabase
           .from('image_likes')
           .select('likes')
           .eq('img_id', imgId)
-          .single();
-        let currentLikes = data ? data.likes : 0;
+          .maybeSingle();
+        let likes = likeRow && likeRow.likes ? likeRow.likes : 0;
 
-        // Upsert (insert or update) new like count
-        let { data: updated, error: upsertError } = await supabase
-          .from('image_likes')
-          .upsert({ img_id: imgId, likes: currentLikes + 1 }, { onConflict: ['img_id'] })
-          .select('likes')
-          .single();
-
-        countSpan.textContent = updated.likes;
+        if (!likeRow) {
+          // Insert new row
+          let { data: inserted, error: insertErr } = await supabase
+            .from('image_likes')
+            .insert({ img_id: imgId, likes: 1 })
+            .select('likes')
+            .single();
+          if (inserted && inserted.likes !== undefined) countSpan.textContent = inserted.likes;
+        } else {
+          // Update row
+          let { data: updated, error: updateErr } = await supabase
+            .from('image_likes')
+            .update({ likes: likes + 1 })
+            .eq('img_id', imgId)
+            .select('likes')
+            .single();
+          if (updated && updated.likes !== undefined) countSpan.textContent = updated.likes;
+        }
       });
+
+      // --- Comments Logic ---
+      // Create comments section
+      const commentSection = document.createElement('div');
+      commentSection.className = 'comment-section';
+
+      const commentList = document.createElement('ul');
+      commentList.className = 'comment-list';
+      commentSection.appendChild(commentList);
+
+      // Fetch all comments for this image
+      async function loadComments() {
+        commentList.innerHTML = '';
+        let { data: comments, error: commErr } = await supabase
+          .from('image_comments')
+          .select('comment, created_at')
+          .eq('img_id', imgId)
+          .order('created_at', { ascending: true });
+        if (comments && comments.length > 0) {
+          comments.forEach(c => {
+            const li = document.createElement('li');
+            li.textContent = `[${new Date(c.created_at).toLocaleString()}] ${c.comment}`;
+            commentList.appendChild(li);
+          });
+        } else {
+          commentList.innerHTML = '<li style="color:#777">No comments yet.</li>';
+        }
+      }
+      await loadComments();
+
+      // Add comment form
+      const form = document.createElement('form');
+      form.className = 'comment-form';
+      form.innerHTML = `
+        <textarea placeholder="Add a comment..." rows="2" required></textarea><br>
+        <button type="submit">💬 Add Comment</button>
+      `;
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const textarea = form.querySelector('textarea');
+        const commentText = textarea.value.trim();
+        if (!commentText) return;
+        // Insert new comment
+        await supabase
+          .from('image_comments')
+          .insert({ img_id: imgId, comment: commentText });
+        textarea.value = '';
+        await loadComments();
+      });
+
+      commentSection.appendChild(form);
+      imgDiv.appendChild(commentSection);
     }
   });
 </script>
