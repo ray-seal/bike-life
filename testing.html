@@ -43,7 +43,7 @@
       const commentsCell = row.insertCell(2);
       nameCell.textContent = name;
       bikeCell.textContent = bike;
-      commentsCell.texcommentsCell.textContent = comments;
+      commentsCell.textContent = comments;
     }
 
     // 4. Fetch and display all data from Supabase
@@ -63,7 +63,7 @@
         return;
       }
 
-      data.forEach(row => addRowToTable(row.name, row.bike, row.cemments));
+      data.forEach(row => addRowToTable(row.name, row.bike, row.comments));
     }
 
     // 5. On form submit, insert to Supabase and reload table
