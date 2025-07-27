@@ -1,11 +1,15 @@
 <!DOCTYPE html>
-
+<html>
+<head>
+  <title>Bike Life User Log</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
 <body>
   <form id="myForm">
     <label for="Name">Enter Name:</label>
-    <input type="text" id="name"><br><br>
+    <input type="text" id="name" required><br><br>
     <label for="Bike">Enter Bike:</label>
-    <input type="text" id="bike"><br><br>
+    <input type="text" id="bike" required><br><br>
     <input type="submit">
   </form>
 
@@ -20,19 +24,65 @@
   </div>
   
   <script>
-    document.getElementById("myForm").addEventListener("submit", function(event) {
-      event.preventDefault();
-      const name = document.getElementById("name").value;
-      const bike = document.getElementById("bike").value;
+    // 1. Replace these with your actual Supabase project credentials
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+    // 2. Initialize Supabase client
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // 3. Function to add a row to the table in the DOM
+    function addRowToTable(name, bike) {
       const table = document.getElementById("dataTable");
       const row = table.insertRow(-1);
       const nameCell = row.insertCell(0);
       const bikeCell = row.insertCell(1);
       nameCell.textContent = name;
       bikeCell.textContent = bike;
+    }
+
+    // 4. Fetch and display all data from Supabase
+    async function loadTableData() {
+      // Remove all rows except the header
+      const table = document.getElementById("dataTable");
+      while(table.rows.length > 1) table.deleteRow(1);
+
+      // Fetch from Supabase
+      let { data, error } = await supabase
+        .from('user_log')
+        .select('name, bike')
+        .order('id', { ascending: true });
+
+      if (error) {
+        alert('Error loading data: ' + error.message);
+        return;
+      }
+
+      data.forEach(row => addRowToTable(row.name, row.bike));
+    }
+
+    // 5. On form submit, insert to Supabase and reload table
+    document.getElementById("myForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+      const name = document.getElementById("name").value;
+      const bike = document.getElementById("bike").value;
+
+      // Insert into Supabase
+      const { error } = await supabase
+        .from('user_log')
+        .insert([{ name, bike }]);
+
+      if (error) {
+        alert('Error saving data: ' + error.message);
+        return;
+      }
+
       document.getElementById("myForm").reset();
+      loadTableData();
     });
+
+    // 6. Load table data on page load
+    window.onload = loadTableData;
   </script>
 </body>
-
 </html>
