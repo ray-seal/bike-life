@@ -2,149 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Photo Album</title>
-  <img src="images/bike-life.png" width="150" height="150" style="display: block; margin: 0 auto;">
+  <title>Photo Album Test</title>
   <style>
-    body {
-      background-color: #000;
-      color: #33ff33;
-      font-family: 'Courier New', monospace;
-      margin: 0;
-      padding: 40px;
-    }
-    .hacker-box {
-      background-color: #111;
-      color: #33ff33;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 15px #33ff33;
-      text-shadow: 0 0 5px #33ff33;
-    }
-    a { color: #33ff33; text-decoration: underline; }
-    a:hover { color: #00ff00; }
-    hr { border: 1px solid #33ff33; }
-    .album-img {
-      display: inline-block;
-      margin: 10px;
-      border: 2px solid #33ff33;
-      border-radius: 8px;
-      padding: 8px;
-      background: #111;
-      text-align: center;
-      vertical-align: top;
-      width: 240px;
-    }
-    .like-btn {
-      background: #222;
-      color: #33ff33;
-      border: 1px solid #33ff33;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 5px;
-      font-size: 1em;
-      padding: 2px 10px;
-      transition: background 0.2s;
-    }
-    .like-btn:hover {
-      background: #33ff33;
-      color: #000;
-    }
-    .like-count {
-      margin-left: 8px;
-      color: #00ff00;
-      font-weight: bold;
-    }
-    .comment-section {
-      background: #222;
-      border-radius: 8px;
-      margin-top: 10px;
-      padding: 10px;
-      text-align: left;
-    }
-    .comment-list {
-      margin: 0 0 10px 0;
-      padding: 0;
-      list-style: none;
-      max-height: 110px;
-      overflow-y: auto;
-      font-size: 0.98em;
-    }
-    .comment-list li {
-      margin-bottom: 8px;
-      border-bottom: 1px dotted #33ff33;
-      padding-bottom: 4px;
-      word-break: break-word;
-    }
-    .comment-form input,
-    .comment-form textarea {
-      width: 95%;
-      padding: 4px;
-      margin-bottom: 5px;
-      background: #111;
-      color: #33ff33;
-      border: 1px solid #33ff33;
-      border-radius: 4px;
-      resize: vertical;
-      font-family: inherit;
-    }
-    .comment-form input[type="text"] {
-      width: 60%;
-      margin-right: 5px;
-    }
-    .comment-form button {
-      background: #222;
-      color: #33ff33;
-      border: 1px solid #33ff33;
-      border-radius: 4px;
-      cursor: pointer;
-      padding: 2px 10px;
-      transition: background 0.2s;
-      font-size: 1em;
-    }
-    .comment-form button:hover {
-      background: #33ff33;
-      color: #000;
-    }
+    body { background: #111; color: #33ff33; font-family: monospace; }
+    .album-img { padding: 10px; border: 1px solid #33ff33; margin: 10px; background: #222; border-radius: 8px; width: 250px; }
+    .like-btn { margin-top: 5px; }
+    .comment-section { margin-top: 10px; }
+    .comment-list { max-height: 100px; overflow-y: auto; font-size: 0.95em; }
   </style>
 </head>
-
 <body>
-<p style="border:double green">
-    <a href="index.html">🏡 Home</a>
-    <a href="bikes.html">🏍 Bikes</a>
-    <a href="socials.html">💻 Socials</a>
-    <a href="age-check.html">⛔️ NSFW</a>
-    <a href="uklearners.html">ℹ️ Info</a>
-    <a href="tiktoks.html">✔️ TikToks</a>
-    <a href="contact.html">📧 Contact</a>
-</p>
-<br>
-<br>
-
-<h1 class="hacker-box" style="text-align: center;">Bike Life Photo Album</h1>
-
-<p>Below are some of the photos shared by group members of their beloved machines. Go ahead and give them a like, I'm sure they'll appreciate it.</p>
-
-<div id="album-container">
   <div class="album-img" data-img-id="tt600.jpg">
     <img src="images/tt600.jpg" width="100%">
-    <button class="like-btn">👍 Like</button>
-    <span class="like-count">0</span>
+    <div>
+      <button class="like-btn">👍 Like</button>
+      <span class="like-count">0</span>
+    </div>
     <div class="comment-section">
       <ul class="comment-list"></ul>
       <form class="comment-form">
         <input type="text" placeholder="Your name" required maxlength="32"><br>
-        <textarea placeholder="Add a comment..." rows="2" required maxlength="200"></textarea><br>
+        <textarea placeholder="Add a comment..." required maxlength="200"></textarea><br>
         <button type="submit">💬 Add Comment</button>
       </form>
     </div>
   </div>
-</div>
-
-<br><br>
-<hr>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
 const supabase = supabase.createClient(
@@ -152,68 +34,63 @@ const supabase = supabase.createClient(
   'sb_publishable_GWagUQzrBmaIakjjNA-7qg_glvd_YtI'
 );
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const imgDiv = document.querySelector('.album-img');
-  const imgId = imgDiv.getAttribute('data-img-id');
-  const countSpan = imgDiv.querySelector('.like-count');
-  const likeBtn = imgDiv.querySelector('.like-btn');
-  const commentList = imgDiv.querySelector('.comment-list');
-  const commentForm = imgDiv.querySelector('.comment-form');
-  const nameInput = commentForm.querySelector('input[type="text"]');
-  const commentInput = commentForm.querySelector('textarea');
+const imgDiv = document.querySelector('.album-img');
+const imgId = imgDiv.getAttribute('data-img-id');
+const countSpan = imgDiv.querySelector('.like-count');
+const likeBtn = imgDiv.querySelector('.like-btn');
+const commentList = imgDiv.querySelector('.comment-list');
+const commentForm = imgDiv.querySelector('.comment-form');
+const nameInput = commentForm.querySelector('input[type="text"]');
+const commentInput = commentForm.querySelector('textarea');
 
-  // Likes
-  async function fetchLikes() {
-    let { data } = await supabase.from('image_likes').select('likes').eq('img_id', imgId).maybeSingle();
-    countSpan.textContent = data && data.likes ? data.likes : 0;
+// Likes
+async function fetchLikes() {
+  let { data, error } = await supabase.from('image_likes').select('likes').eq('img_id', imgId).maybeSingle();
+  countSpan.textContent = data && data.likes ? data.likes : 0;
+}
+likeBtn.addEventListener('click', async () => {
+  let { data, error } = await supabase.from('image_likes').select('likes').eq('img_id', imgId).maybeSingle();
+  if (!data) {
+    let { error: insertErr } = await supabase.from('image_likes').insert({ img_id: imgId, likes: 1 });
+    if (insertErr) alert('Like insert error: ' + insertErr.message);
+  } else {
+    let { error: updateErr } = await supabase.from('image_likes').update({ likes: data.likes + 1 }).eq('img_id', imgId);
+    if (updateErr) alert('Like update error: ' + updateErr.message);
   }
-  likeBtn.addEventListener('click', async () => {
-    let { data } = await supabase.from('image_likes').select('likes').eq('img_id', imgId).maybeSingle();
-    if (!data) {
-      await supabase.from('image_likes').insert({ img_id: imgId, likes: 1 });
-    } else {
-      await supabase.from('image_likes').update({ likes: data.likes + 1 }).eq('img_id', imgId);
-    }
-    fetchLikes();
-  });
-
-  // Comments
-  async function fetchComments() {
-    let { data } = await supabase.from('image_comments')
-      .select('name, comment, created_at')
-      .eq('img_id', imgId)
-      .order('created_at', { ascending: true });
-    commentList.innerHTML = '';
-    if (data && data.length) {
-      data.forEach(c => {
-        let li = document.createElement('li');
-        li.textContent = `[${new Date(c.created_at).toLocaleString()}] ${c.comment} - ${c.name}`;
-        commentList.appendChild(li);
-      });
-    } else {
-      commentList.innerHTML = '<li style="color:#777">No comments yet.</li>';
-    }
-  }
-  commentForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = nameInput.value.trim();
-    const comment = commentInput.value.trim();
-    if (!name || !comment) return;
-    await supabase.from('image_comments').insert({ img_id: imgId, name, comment });
-    nameInput.value = '';
-    commentInput.value = '';
-    fetchComments();
-  });
-
   fetchLikes();
+});
+
+// Comments
+async function fetchComments() {
+  let { data, error } = await supabase.from('image_comments')
+    .select('name, comment, created_at')
+    .eq('img_id', imgId)
+    .order('created_at', { ascending: true });
+  commentList.innerHTML = '';
+  if (data && data.length) {
+    data.forEach(c => {
+      let li = document.createElement('li');
+      li.textContent = `[${new Date(c.created_at).toLocaleString()}] ${c.comment} - ${c.name}`;
+      commentList.appendChild(li);
+    });
+  } else {
+    commentList.innerHTML = '<li style="color:#777">No comments yet.</li>';
+  }
+}
+commentForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = nameInput.value.trim();
+  const comment = commentInput.value.trim();
+  if (!name || !comment) return;
+  let { error } = await supabase.from('image_comments').insert({ img_id: imgId, name, comment });
+  if (error) alert('Comment error: ' + error.message);
+  nameInput.value = '';
+  commentInput.value = '';
   fetchComments();
 });
-</script>
 
-<a href="#"><button style="background-color:black; font-size:large; color:green">Back To Top</button></a>
-<hr>
-<footer>
-  <p>© 2025 by <strong>Ray Seal</strong> | <a href="https://chat.whatsapp.com/D7w936sKNeU7AvvCGdQ9F7">Join us on WhatsApp</a></p>
-</footer>
+fetchLikes();
+fetchComments();
+</script>
 </body>
 </html>
