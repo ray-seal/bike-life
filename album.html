@@ -4,6 +4,55 @@
   <meta charset="UTF-8" />
   <title>Photo Album v9 (Likes limited per browser)</title>
   <style>
+     <img src="images/bike-life.png" Width=150, Height=150 style="display: block; margin: 0 auto;"> 
+  <style>
+    body {
+      background-color: #000;         /* black background */
+      color: #33ff33;                 /* hacker green */
+      font-family: 'Courier New', monospace;
+      margin: 0;
+      padding: 40px;
+    }
+
+    .hacker-box {
+      background-color: #111;
+      color: #33ff33;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 15px #33ff33;
+      text-shadow: 0 0 5px #33ff33;
+    }
+
+    a {
+      color: #33ff33;
+      text-decoration: underline;
+    }
+
+    a:hover {
+      color: #00ff00;
+    }
+
+    hr {
+      border: 1px solid #33ff33;
+    }
+  </style>
+</head>
+<body>
+<p style="border:double green">
+    <a href="bikes.html">🏍 Bikes</a>
+    <a href="socials.html">💻 Socials</a>
+    <a href="album.html">📷 Photo Album</a>
+    <a href="age-check.html">⛔️ NSFW</a>
+    <a href="uklearners.html">ℹ️ Info</a>
+    <a href="tiktoks.html">✔️ TikToks</a>
+    <a href="contact.html">📧 Contact</a>
+    </p>
+    <br>
+      <br>
+
+<h1 class="hacker-box" style="text-align: center;">Welcome to Bike Life</h1>
+  <p style="text-align: center;">Welcome to Bike Life. Bike Life is a WhatsApp based motorcycle group for like minded individuals to chat and get to know each other.<br>
+  This website aims to introduce you to some of the bikes featured within the group.
     body { background: #111; color: #33ff33; font-family: monospace; }
     .album-img { padding: 10px; border: 1px solid #33ff33; margin: 10px; background: #222; border-radius: 8px; width: 250px; }
     .like-btn { margin-top: 5px; }
@@ -122,5 +171,7 @@ fetchLikes();
 fetchComments();
 checkLikeStatus();
 </script>
+
 </body>
+  
 </html>
