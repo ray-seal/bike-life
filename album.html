@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Photo Album</title>
-  <img src="images/bike-life.png" Width=150, Height=150 style="display: block; margin: 0 auto;">
+  <img src="images/bike-life.png" width="150" height="150" style="display: block; margin: 0 auto;">
   <style>
     body {
       background-color: #000;
@@ -40,7 +40,7 @@
       background: #111;
       text-align: center;
       vertical-align: top;
-      width: 230px;
+      width: 240px;
     }
     .like-btn {
       background: #222;
@@ -73,25 +73,31 @@
       margin: 0 0 10px 0;
       padding: 0;
       list-style: none;
-      max-height: 120px;
+      max-height: 110px;
       overflow-y: auto;
+      font-size: 0.98em;
     }
     .comment-list li {
       margin-bottom: 8px;
       border-bottom: 1px dotted #33ff33;
       padding-bottom: 4px;
-      font-size: 0.98em;
       word-break: break-word;
     }
+    .comment-form input,
     .comment-form textarea {
       width: 95%;
-      padding: 5px;
-      margin-bottom: 4px;
+      padding: 4px;
+      margin-bottom: 5px;
       background: #111;
       color: #33ff33;
       border: 1px solid #33ff33;
       border-radius: 4px;
       resize: vertical;
+      font-family: inherit;
+    }
+    .comment-form input[type="text"] {
+      width: 60%;
+      margin-right: 5px;
     }
     .comment-form button {
       background: #222;
@@ -173,7 +179,6 @@
     <button class="like-btn">👍 Like</button>
     <span class="like-count">0</span>
   </div>
-  <!-- Example additional images -->
   <div class="album-img" data-img-id="IMG1.jpg"><img src="images/IMG1.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
   <div class="album-img" data-img-id="IMG2.jpg"><img src="images/IMG2.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
   <div class="album-img" data-img-id="IMG3.jpg"><img src="images/IMG3.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
@@ -184,20 +189,7 @@
   <div class="album-img" data-img-id="IMG8.jpg"><img src="images/IMG8.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
   <div class="album-img" data-img-id="IMG9.jpg"><img src="images/IMG9.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
   <div class="album-img" data-img-id="IMG10.jpg"><img src="images/IMG10.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
-  <div class="album-img" data-img-id="IMG11.jpg"><img src="images/IMG11.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
-  <div class="album-img" data-img-id="IMG12.jpg"><img src="images/IMG12.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
-  <div class="album-img" data-img-id="IMG13.jpg"><img src="images/IMG13.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
-  <div class="album-img" data-img-id="IMG14.jpg"><img src="images/IMG14.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
-  <div class="album-img" data-img-id="IMG15.jpg"><img src="images/IMG15.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
-  <div class="album-img" data-img-id="IMG16.jpg"><img src="images/IMG16.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
-  <div class="album-img" data-img-id="IMG17.jpg"><img src="images/IMG17.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
-  <div class="album-img" data-img-id="IMG18.jpg"><img src="images/IMG18.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
-  <div class="album-img" data-img-id="IMG19.jpg"><img src="images/IMG19.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
-  <div class="album-img" data-img-id="IMG20.jpg"><img src="images/IMG20.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
-  <div class="album-img" data-img-id="IMG21.jpg"><img src="images/IMG21.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
-  <div class="album-img" data-img-id="IMG22.jpg"><img src="images/IMG22.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
-  <div class="album-img" data-img-id="IMG23.jpg"><img src="images/IMG23.jpg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
-  <div class="album-img" data-img-id="kieran2.jpeg"><img src="images/kieran2.jpeg" width="100%"><button class="like-btn">👍 Like</button><span class="like-count">0</span></div>
+  <!-- Add more images as needed -->
 </div>
 
 <br><br>
@@ -220,13 +212,13 @@
 
       // --- Likes Logic ---
       // Fetch current like count, handle no row
-      let { data, error } = await supabase
+      let { data: likeData, error: likeError } = await supabase
         .from('image_likes')
         .select('likes')
         .eq('img_id', imgId)
         .maybeSingle();
 
-      let currentLikes = data && data.likes ? data.likes : 0;
+      let currentLikes = likeData && likeData.likes ? likeData.likes : 0;
       countSpan.textContent = currentLikes;
 
       likeBtn.addEventListener('click', async () => {
@@ -272,13 +264,13 @@
         commentList.innerHTML = '';
         let { data: comments, error: commErr } = await supabase
           .from('image_comments')
-          .select('comment, created_at')
+          .select('name, comment, created_at')
           .eq('img_id', imgId)
           .order('created_at', { ascending: true });
         if (comments && comments.length > 0) {
           comments.forEach(c => {
             const li = document.createElement('li');
-            li.textContent = `[${new Date(c.created_at).toLocaleString()}] ${c.comment}`;
+            li.textContent = `[${new Date(c.created_at).toLocaleString()}] ${c.comment} - ${c.name}`;
             commentList.appendChild(li);
           });
         } else {
@@ -291,19 +283,23 @@
       const form = document.createElement('form');
       form.className = 'comment-form';
       form.innerHTML = `
-        <textarea placeholder="Add a comment..." rows="2" required></textarea><br>
+        <input type="text" placeholder="Your name" required maxlength="32">
+        <textarea placeholder="Add a comment..." rows="2" required maxlength="200"></textarea><br>
         <button type="submit">💬 Add Comment</button>
       `;
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const nameInput = form.querySelector('input[type="text"]');
         const textarea = form.querySelector('textarea');
+        const name = nameInput.value.trim();
         const commentText = textarea.value.trim();
-        if (!commentText) return;
+        if (!name || !commentText) return;
         // Insert new comment
         await supabase
           .from('image_comments')
-          .insert({ img_id: imgId, comment: commentText });
+          .insert({ img_id: imgId, name: name, comment: commentText });
         textarea.value = '';
+        nameInput.value = '';
         await loadComments();
       });
 
