@@ -35,7 +35,7 @@
   const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // 3. Function to add a row to the table in the DOM
-  function addRowToTable(name, bike, comments) {
+  function addRowToTable(Name, Bike, Comments) {
     const table = document.getElementById("dataTable");
     const row = table.insertRow(-1);
     const nameCell = row.insertCell(0);
@@ -62,7 +62,7 @@
     }
 
     if (data) {
-      data.forEach(row => addRowToTable(row.name, row.bike, row.comments));
+      data.forEach(row => addRowToTable(row.Name, row.Bike, row.Comments));
     }
   }
 
@@ -75,7 +75,7 @@
 
     const { error } = await supabase
       .from('"bike life"')
-      .insert([{ name, bike, comments }]);
+      .insert([{ Name, Bike, Comments }]);
 
     if (error) {
       alert('Error saving data: ' + error.message);
