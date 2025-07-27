@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Photo Album v9</title>
+  <title>Photo Album v9 (Likes limited per browser)</title>
   <style>
     body { background: #111; color: #33ff33; font-family: monospace; }
     .album-img { padding: 10px; border: 1px solid #33ff33; margin: 10px; background: #222; border-radius: 8px; width: 250px; }
@@ -49,7 +49,27 @@ async function fetchLikes() {
     .from('image_likes').select('likes').eq('img_id', imgId).maybeSingle();
   countSpan.textContent = data && data.likes ? data.likes : 0;
 }
+
+// Disable the like button if already liked in this browser
+function checkLikeStatus() {
+  const likeKey = `liked_${imgId}`;
+  if (localStorage.getItem(likeKey)) {
+    likeBtn.disabled = true;
+    likeBtn.textContent = "👍 Liked";
+    likeBtn.style.opacity = 0.6;
+  } else {
+    likeBtn.disabled = false;
+    likeBtn.textContent = "👍 Like";
+    likeBtn.style.opacity = 1;
+  }
+}
+
 likeBtn.addEventListener('click', async () => {
+  const likeKey = `liked_${imgId}`;
+  if (localStorage.getItem(likeKey)) {
+    alert("You've already liked this image from this browser!");
+    return;
+  }
   let { data, error } = await supabaseClient
     .from('image_likes').select('likes').eq('img_id', imgId).maybeSingle();
   if (!data) {
@@ -61,6 +81,8 @@ likeBtn.addEventListener('click', async () => {
       .from('image_likes').update({ likes: data.likes + 1 }).eq('img_id', imgId);
     if (updateErr) alert('Like update error: ' + updateErr.message);
   }
+  localStorage.setItem(likeKey, 'true');
+  checkLikeStatus();
   fetchLikes();
 });
 
@@ -95,8 +117,10 @@ commentForm.addEventListener('submit', async (e) => {
   fetchComments();
 });
 
+// Initial load
 fetchLikes();
 fetchComments();
+checkLikeStatus();
 </script>
 </body>
 </html>
