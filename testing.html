@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Bike Life Comments</title>
+  <title>Comments</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
@@ -16,7 +16,7 @@
   </form>
 
   <div id="table">
-    <h2>User Log</h2>
+    <h2>Comments</h2>
     <table id="dataTable">
       <tr>
         <th>Name</th>
@@ -54,7 +54,7 @@
 
       // Fetch from Supabase
       let { data, error } = await supabase
-        .from('user_log')
+        .from('"bike life"')
         .select('name, bike, comments')
         .order('id', { ascending: true });
 
@@ -76,7 +76,7 @@
 
       // Insert into Supabase
       const { error } = await supabase
-        .from('user_log')
+        .from('"bike life"')
         .insert([{ name, bike, comments }]);
 
       if (error) {
