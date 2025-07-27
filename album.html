@@ -653,93 +653,94 @@ const supabaseClient = supabase.createClient(
   'sb_publishable_GWagUQzrBmaIakjjNA-7qg_glvd_YtI'
 );
 
-const imgDiv = document.querySelector('.album-img');
-const imgId = imgDiv.getAttribute('data-img-id');
-const countSpan = imgDiv.querySelector('.like-count');
-const likeBtn = imgDiv.querySelector('.like-btn');
-const commentList = imgDiv.querySelector('.comment-list');
-const commentForm = imgDiv.querySelector('.comment-form');
-const nameInput = commentForm.querySelector('input[type="text"]');
-const commentInput = commentForm.querySelector('textarea');
+document.querySelectorAll('.album-img').forEach(imgDiv => {
+  const imgId = imgDiv.getAttribute('data-img-id');
+  const countSpan = imgDiv.querySelector('.like-count');
+  const likeBtn = imgDiv.querySelector('.like-btn');
+  const commentList = imgDiv.querySelector('.comment-list');
+  const commentForm = imgDiv.querySelector('.comment-form');
+  const nameInput = commentForm.querySelector('input[type="text"]');
+  const commentInput = commentForm.querySelector('textarea');
 
-// Likes
-async function fetchLikes() {
-  let { data, error } = await supabaseClient
-    .from('image_likes').select('likes').eq('img_id', imgId).maybeSingle();
-  countSpan.textContent = data && data.likes ? data.likes : 0;
-}
+  // Likes
+  async function fetchLikes() {
+    let { data, error } = await supabaseClient
+      .from('image_likes').select('likes').eq('img_id', imgId).maybeSingle();
+    countSpan.textContent = data && data.likes ? data.likes : 0;
+  }
 
-// Disable the like button if already liked in this browser
-function checkLikeStatus() {
-  const likeKey = `liked_${imgId}`;
-  if (localStorage.getItem(likeKey)) {
-    likeBtn.disabled = true;
-    likeBtn.textContent = "👍 Liked";
-    likeBtn.style.opacity = 0.6;
-  } else {
-    likeBtn.disabled = false;
-    likeBtn.textContent = "👍 Like";
-    likeBtn.style.opacity = 1;
+  // Disable the like button if already liked in this browser
+  function checkLikeStatus() {
+    const likeKey = `liked_${imgId}`;
+    if (localStorage.getItem(likeKey)) {
+      likeBtn.disabled = true;
+      likeBtn.textContent = "👍 Liked";
+      likeBtn.style.opacity = 0.6;
+    } else {
+      likeBtn.disabled = false;
+      likeBtn.textContent = "👍 Like";
+      likeBtn.style.opacity = 1;
+    }
   }
-}
 
-likeBtn.addEventListener('click', async () => {
-  const likeKey = `liked_${imgId}`;
-  if (localStorage.getItem(likeKey)) {
-    alert("You've already liked this image from this browser!");
-    return;
+  likeBtn.addEventListener('click', async () => {
+    const likeKey = `liked_${imgId}`;
+    if (localStorage.getItem(likeKey)) {
+      alert("You've already liked this image from this browser!");
+      return;
+    }
+    let { data, error } = await supabaseClient
+      .from('image_likes').select('likes').eq('img_id', imgId).maybeSingle();
+    if (!data) {
+      let { error: insertErr } = await supabaseClient
+        .from('image_likes').insert({ img_id: imgId, likes: 1 });
+      if (insertErr) alert('Like insert error: ' + insertErr.message);
+    } else {
+      let { error: updateErr } = await supabaseClient
+        .from('image_likes').update({ likes: data.likes + 1 }).eq('img_id', imgId);
+      if (updateErr) alert('Like update error: ' + updateErr.message);
+    }
+    localStorage.setItem(likeKey, 'true');
+    checkLikeStatus();
+    fetchLikes();
+  });
+
+  // Comments
+  async function fetchComments() {
+    let { data, error } = await supabaseClient
+      .from('image_comments')
+      .select('name, comment, created_at')
+      .eq('img_id', imgId)
+      .order('created_at', { ascending: true });
+    commentList.innerHTML = '';
+    if (data && data.length) {
+      data.forEach(c => {
+        let li = document.createElement('li');
+        li.textContent = `[${new Date(c.created_at).toLocaleString()}] ${c.comment} - ${c.name}`;
+        commentList.appendChild(li);
+      });
+    } else {
+      commentList.innerHTML = '<li style="color:#777">No comments yet.</li>';
+    }
   }
-  let { data, error } = await supabaseClient
-    .from('image_likes').select('likes').eq('img_id', imgId).maybeSingle();
-  if (!data) {
-    let { error: insertErr } = await supabaseClient
-      .from('image_likes').insert({ img_id: imgId, likes: 1 });
-    if (insertErr) alert('Like insert error: ' + insertErr.message);
-  } else {
-    let { error: updateErr } = await supabaseClient
-      .from('image_likes').update({ likes: data.likes + 1 }).eq('img_id', imgId);
-    if (updateErr) alert('Like update error: ' + updateErr.message);
-  }
-  localStorage.setItem(likeKey, 'true');
-  checkLikeStatus();
+  commentForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = nameInput.value.trim();
+    const comment = commentInput.value.trim();
+    if (!name || !comment) return;
+    let { error } = await supabaseClient
+      .from('image_comments').insert({ img_id: imgId, name, comment });
+    if (error) alert('Comment error: ' + error.message);
+    nameInput.value = '';
+    commentInput.value = '';
+    fetchComments();
+  });
+
+  // Initial load for this album-img
   fetchLikes();
-});
-
-// Comments
-async function fetchComments() {
-  let { data, error } = await supabaseClient
-    .from('image_comments')
-    .select('name, comment, created_at')
-    .eq('img_id', imgId)
-    .order('created_at', { ascending: true });
-  commentList.innerHTML = '';
-  if (data && data.length) {
-    data.forEach(c => {
-      let li = document.createElement('li');
-      li.textContent = `[${new Date(c.created_at).toLocaleString()}] ${c.comment} - ${c.name}`;
-      commentList.appendChild(li);
-    });
-  } else {
-    commentList.innerHTML = '<li style="color:#777">No comments yet.</li>';
-  }
-}
-commentForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const name = nameInput.value.trim();
-  const comment = commentInput.value.trim();
-  if (!name || !comment) return;
-  let { error } = await supabaseClient
-    .from('image_comments').insert({ img_id: imgId, name, comment });
-  if (error) alert('Comment error: ' + error.message);
-  nameInput.value = '';
-  commentInput.value = '';
   fetchComments();
+  checkLikeStatus();
 });
-
-// Initial load
-fetchLikes();
-fetchComments();
-checkLikeStatus();
 </script>
 <a href="#">
 <button style="background-color:black; font-size:large; color:green">Back To Top</a>
