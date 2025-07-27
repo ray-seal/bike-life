@@ -63,7 +63,7 @@
         return;
       }
 
-      data.forEach(row => addRowToTable(row.name, row.bike));
+      data.forEach(row => addRowToTable(row.name, row.bike, row.cemments));
     }
 
     // 5. On form submit, insert to Supabase and reload table
@@ -71,7 +71,7 @@
       event.preventDefault();
       const name = document.getElementById("name").value;
       const bike = document.getElementById("bike").value;
-      const comments = document.gdocument.getElementById("comments").value;
+      const comments = document.getElementById("comments").value;
 
 
       // Insert into Supabase
