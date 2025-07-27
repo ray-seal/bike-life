@@ -21,16 +21,9 @@
       box-shadow: 0 0 15px #33ff33;
       text-shadow: 0 0 5px #33ff33;
     }
-    a {
-      color: #33ff33;
-      text-decoration: underline;
-    }
-    a:hover {
-      color: #00ff00;
-    }
-    hr {
-      border: 1px solid #33ff33;
-    }
+    a { color: #33ff33; text-decoration: underline; }
+    a:hover { color: #00ff00; }
+    hr { border: 1px solid #33ff33; }
     .album-img {
       display: inline-block;
       margin: 10px;
@@ -138,6 +131,14 @@
     <img src="images/tt600.jpg" width="100%">
     <button class="like-btn">👍 Like</button>
     <span class="like-count">0</span>
+    <div class="comment-section">
+      <ul class="comment-list"></ul>
+      <form class="comment-form">
+        <input type="text" placeholder="Your name" required maxlength="32"><br>
+        <textarea placeholder="Add a comment..." rows="2" required maxlength="200"></textarea><br>
+        <button type="submit">💬 Add Comment</button>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -146,116 +147,67 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
-  // Replace with your Supabase info!
-  const supabaseUrl = 'https://bdbdvbwnvhdvvymmrhus.supabase.co';
-  const supabaseKey = 'sb_publishable_GWagUQzrBmaIakjjNA-7qg_glvd_YtI';
-  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+const supabase = supabase.createClient(
+  'https://bdbdvbwnvhdvvymmrhus.supabase.co',
+  'sb_publishable_GWagUQzrBmaIakjjNA-7qg_glvd_YtI'
+);
 
-  document.addEventListener('DOMContentLoaded', async () => {
-    const images = document.querySelectorAll('.album-img');
+document.addEventListener('DOMContentLoaded', async () => {
+  const imgDiv = document.querySelector('.album-img');
+  const imgId = imgDiv.getAttribute('data-img-id');
+  const countSpan = imgDiv.querySelector('.like-count');
+  const likeBtn = imgDiv.querySelector('.like-btn');
+  const commentList = imgDiv.querySelector('.comment-list');
+  const commentForm = imgDiv.querySelector('.comment-form');
+  const nameInput = commentForm.querySelector('input[type="text"]');
+  const commentInput = commentForm.querySelector('textarea');
 
-    for (const imgDiv of images) {
-      const imgId = imgDiv.getAttribute('data-img-id');
-      const countSpan = imgDiv.querySelector('.like-count');
-      const likeBtn = imgDiv.querySelector('.like-btn');
-
-      // --- Likes Logic ---
-      // Fetch current like count, handle no row
-      let { data: likeData, error: likeError } = await supabase
-        .from('image_likes')
-        .select('likes')
-        .eq('img_id', imgId)
-        .maybeSingle();
-
-      let currentLikes = likeData && likeData.likes ? likeData.likes : 0;
-      countSpan.textContent = currentLikes;
-
-      likeBtn.addEventListener('click', async () => {
-        // On first like, insert row. Otherwise, update.
-        let { data: likeRow, error: getErr } = await supabase
-          .from('image_likes')
-          .select('likes')
-          .eq('img_id', imgId)
-          .maybeSingle();
-        let likes = likeRow && likeRow.likes ? likeRow.likes : 0;
-
-        if (!likeRow) {
-          // Insert new row
-          let { data: inserted, error: insertErr } = await supabase
-            .from('image_likes')
-            .insert({ img_id: imgId, likes: 1 })
-            .select('likes')
-            .single();
-          if (inserted && inserted.likes !== undefined) countSpan.textContent = inserted.likes;
-        } else {
-          // Update row
-          let { data: updated, error: updateErr } = await supabase
-            .from('image_likes')
-            .update({ likes: likes + 1 })
-            .eq('img_id', imgId)
-            .select('likes')
-            .single();
-          if (updated && updated.likes !== undefined) countSpan.textContent = updated.likes;
-        }
-      });
-
-      // --- Comments Logic ---
-      // Create comments section
-      const commentSection = document.createElement('div');
-      commentSection.className = 'comment-section';
-
-      const commentList = document.createElement('ul');
-      commentList.className = 'comment-list';
-      commentSection.appendChild(commentList);
-
-      // Fetch all comments for this image
-      async function loadComments() {
-        commentList.innerHTML = '';
-        let { data: comments, error: commErr } = await supabase
-          .from('image_comments')
-          .select('name, comment, created_at')
-          .eq('img_id', imgId)
-          .order('created_at', { ascending: true });
-        if (comments && comments.length > 0) {
-          comments.forEach(c => {
-            const li = document.createElement('li');
-            li.textContent = `[${new Date(c.created_at).toLocaleString()}] ${c.comment} - ${c.name}`;
-            commentList.appendChild(li);
-          });
-        } else {
-          commentList.innerHTML = '<li style="color:#777">No comments yet.</li>';
-        }
-      }
-      await loadComments();
-
-      // Add comment form
-      const form = document.createElement('form');
-      form.className = 'comment-form';
-      form.innerHTML = `
-        <input type="text" placeholder="Your name" required maxlength="32">
-        <textarea placeholder="Add a comment..." rows="2" required maxlength="200"></textarea><br>
-        <button type="submit">💬 Add Comment</button>
-      `;
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const nameInput = form.querySelector('input[type="text"]');
-        const textarea = form.querySelector('textarea');
-        const name = nameInput.value.trim();
-        const commentText = textarea.value.trim();
-        if (!name || !commentText) return;
-        // Insert new comment
-        await supabase
-          .from('image_comments')
-          .insert({ img_id: imgId, name: name, comment: commentText });
-        textarea.value = '';
-        nameInput.value = '';
-        await loadComments();
-      });
-
-      commentSection.appendChild(form);
-      imgDiv.appendChild(commentSection);
+  // Likes
+  async function fetchLikes() {
+    let { data } = await supabase.from('image_likes').select('likes').eq('img_id', imgId).maybeSingle();
+    countSpan.textContent = data && data.likes ? data.likes : 0;
+  }
+  likeBtn.addEventListener('click', async () => {
+    let { data } = await supabase.from('image_likes').select('likes').eq('img_id', imgId).maybeSingle();
+    if (!data) {
+      await supabase.from('image_likes').insert({ img_id: imgId, likes: 1 });
+    } else {
+      await supabase.from('image_likes').update({ likes: data.likes + 1 }).eq('img_id', imgId);
     }
+    fetchLikes();
   });
+
+  // Comments
+  async function fetchComments() {
+    let { data } = await supabase.from('image_comments')
+      .select('name, comment, created_at')
+      .eq('img_id', imgId)
+      .order('created_at', { ascending: true });
+    commentList.innerHTML = '';
+    if (data && data.length) {
+      data.forEach(c => {
+        let li = document.createElement('li');
+        li.textContent = `[${new Date(c.created_at).toLocaleString()}] ${c.comment} - ${c.name}`;
+        commentList.appendChild(li);
+      });
+    } else {
+      commentList.innerHTML = '<li style="color:#777">No comments yet.</li>';
+    }
+  }
+  commentForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = nameInput.value.trim();
+    const comment = commentInput.value.trim();
+    if (!name || !comment) return;
+    await supabase.from('image_comments').insert({ img_id: imgId, name, comment });
+    nameInput.value = '';
+    commentInput.value = '';
+    fetchComments();
+  });
+
+  fetchLikes();
+  fetchComments();
+});
 </script>
 
 <a href="#"><button style="background-color:black; font-size:large; color:green">Back To Top</button></a>
